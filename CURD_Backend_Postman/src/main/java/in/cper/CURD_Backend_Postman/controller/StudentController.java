@@ -104,4 +104,17 @@ public class StudentController {
 
         return  ResponseEntity.status(HttpStatus.OK).body(true);
     }
+
+    @PatchMapping("/delete-soft/{id}")
+    public ResponseEntity<Student> deleteStudentSoft(@PathVariable Long id) {
+        Optional<Student> studentRes = studentService.deleteStudentSoftById(id);
+
+        if (studentRes.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(studentRes.get());
+    }
 }

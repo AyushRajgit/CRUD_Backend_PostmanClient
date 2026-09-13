@@ -13,6 +13,14 @@ package in.cper.CURD_Backend_Postman.repository;
 import in.cper.CURD_Backend_Postman.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface StudentRepository extends JpaRepository<Student,Long> {
 
+    Optional<Student> findByIdAndDeletedFalse(Long id);
+
+    List<Student> findByDeletedFalse();
+
+    Student findByEmailAndDeletedTrue(String email);
 }

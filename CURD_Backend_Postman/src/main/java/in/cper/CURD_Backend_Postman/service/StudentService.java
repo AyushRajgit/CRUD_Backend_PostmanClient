@@ -24,25 +24,35 @@ public class StudentService {
     }
 
     public Optional<Student> createStudent(Student student) {
-        Student newStudent = studentRepository.save(student);
-        if (newStudent == null) return Optional.empty();
-        return Optional.of(newStudent);
+        student.setDeleted(false);
+
+        Student studentRes = studentRepository.findByEmailAndDeletedTrue(student.getEmail());
+        if (studentRes == null) {
+            Student newStudent = studentRepository.save(student);
+            if (newStudent == null) return Optional.empty();
+            return Optional.of(newStudent);
+        } else {
+            studentRes.setDeleted(false);
+            Student existingStudent = studentRepository.save(studentRes);
+            if (existingStudent == null) return Optional.empty();
+            return Optional.of(existingStudent);
+        }
     }
 
     public Optional<Student> getStudent(Long id) {
-        Optional<Student> studentRes = studentRepository.findById(id);
+        Optional<Student> studentRes = studentRepository.findByIdAndDeletedFalse(id);
         if (studentRes.isEmpty()) return Optional.empty();
         return studentRes;
     }
 
     public Optional<List<Student>> getAllStudents() {
-        List<Student> studentRes = studentRepository.findAll();
+        List<Student> studentRes = studentRepository.findByDeletedFalse();
         if (studentRes.isEmpty()) return Optional.empty();
         return Optional.of(studentRes);
     }
 
     public Optional<Student> updateStudent(Long id, Student student) {
-        Optional<Student> existingStudent = studentRepository.findById(id);
+        Optional<Student> existingStudent = studentRepository.findByIdAndDeletedFalse(id);
 
         if (existingStudent.isEmpty()) return Optional.empty();
 
@@ -52,6 +62,7 @@ public class StudentService {
         updatedStudent.setAge(student.getAge());
         updatedStudent.setPrimarySkill(student.getPrimarySkill());
         updatedStudent.setAddress(student.getAddress());
+        updatedStudent.setDeleted(false);
 
         studentRepository.save(updatedStudent);
         return Optional.of(updatedStudent);
@@ -63,5 +74,15 @@ public class StudentService {
 
         studentRepository.deleteById(id);
         return studentRes;
+    }
+
+    public Optional<Student> deleteStudentSoftById(Long id) {
+        Optional<Student> studentRes = studentRepository.findByIdAndDeletedFalse(id);
+        if (studentRes.isEmpty()) return Optional.empty();
+
+        Student softDeletedStudent = studentRes.get();
+        softDeletedStudent.setDeleted(true);
+        studentRepository.save(softDeletedStudent);
+        return Optional.of(softDeletedStudent);
     }
 }

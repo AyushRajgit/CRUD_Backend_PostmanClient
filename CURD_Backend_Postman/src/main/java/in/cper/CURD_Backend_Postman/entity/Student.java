@@ -29,6 +29,7 @@ public class Student {
     private int age;
     private String PrimarySkill;
     private String Address;
+    private Boolean deleted;
 
     public long getId() {
         return id;
@@ -76,5 +77,13 @@ public class Student {
 
     public void setAddress(String address) {
         Address = address;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }
